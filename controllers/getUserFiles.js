@@ -1,13 +1,11 @@
- import "@tensorflow/tfjs-node";
- import * as canvas from "canvas";
- import * as faceapi from "@vladmandic/face-api";
+import "@tensorflow/tfjs-node";
+import * as canvas from "canvas";
+import * as faceapi from "@vladmandic/face-api";
 
 // Load models and configure the environment
 const { Canvas, Image, ImageData } = canvas;
 import { google } from "googleapis";
-import {fork} from 'child_process';
 import oAuth2Client from "../config/googleAuth.js";
-import path from "path";
 import sendMail from "../utils/sendMail.js";
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
@@ -27,21 +25,17 @@ async function getUserFiles(req, res) {
     const drive = google.drive({ version: "v3", auth: oAuth2Client });
 
     const { data } = await drive.files.list({
-      q: `mimeType != 'application/vnd.google-apps.folder'  and '${folderId}' in parents`, 
+      q: `mimeType != 'application/vnd.google-apps.folder'  and '${folderId}' in parents`,
     });
 
     if (data.files.length) {
       compareImages(url, data.files, user);
-res.json({message:"You will receive an email with Images"});
+      res.json({ message: "You will receive an email with Images" });
     } else {
       res.json({
         message: "Images not found in the given folder.",
       });
     }
-
-   // res.json({
-    //  message: "we will send an email with image links.",
-  //  });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -83,17 +77,9 @@ async function compareImages(image, imagePaths, user) {
 
   // Array to store matching images
   const matchingImages = [];
-  
-   // Create an array to hold the promises for each child process
- // const promises = [];
 
-  // Iterate over the array of images
-//if(1>3){
-for (const imagePath of imagePaths) {
-
-   const imageUrl = `https://drive.google.com/thumbnail?id=${imagePath?.id}&sz=w1000`; 
-// Create a promise for each child process
- //  if(1 > 3){
+  for (const imagePath of imagePaths) {
+    const imageUrl = `https://drive.google.com/thumbnail?id=${imagePath?.id}&sz=w1000`;
 
     const currentImage = await canvas.loadImage(imageUrl);
 
@@ -116,26 +102,27 @@ for (const imagePath of imagePaths) {
       referenceDescriptors,
       currentDescriptors
     );
-  
-// matchingImages.push({imageUrl,euclideanDistance});
 
+    console.log("euclideanDistance", euclideanDistance);
     // Compare the similarity with the threshold
     if (euclideanDistance < similarityThreshold) {
       console.log(`${imageUrl}: Faces are similar.`);
-      matchingImages.push({url:imageUrl,name:imagePath?.name,mimeType:imagePath?.mimeType});
+      matchingImages.push({
+        url: imageUrl,
+        name: imagePath?.name,
+        mimeType: imagePath?.mimeType,
+      });
     } else {
       console.log(`${imageUrl}: Faces are not similar.`);
     }
   }
- 
-const attachments = matchingImages.map(data => ({
-  filename: data.name, // Extract the filename from the URL
-  path: data.url,
-  encoding: 'base64', // Required for URL attachments
-  contentType: data.mimeType,
-}));
 
-sendMail(user?.email,'Your Images','Filtered Images',attachments);
+  const attachments = matchingImages.map((data) => ({
+    filename: data.name, // Extract the filename from the URL
+    path: data.url,
+    encoding: "base64", // Required for URL attachments
+    contentType: data.mimeType,
+  }));
+
+  sendMail(user?.email, "Your Images", "Filtered Images", attachments);
 }
-
-

@@ -6,12 +6,12 @@ async function sendMail(email, body, subject, attachments) {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
       auth: {
-      user:process.env.SMTP_EMAIL,
-      pass:process.env.SMTP_PASSWORD,
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
 
-const response = await transporter.sendMail({
+    const response = await transporter.sendMail({
       from: process.env.SMTP_EMAIL,
       to: email,
       subject: subject,
@@ -19,7 +19,7 @@ const response = await transporter.sendMail({
       attachments,
     });
 
-  console.log('Email sent:',response);
+    console.log("Email sent:", response);
   } catch (error) {
     console.log("mail error", error);
   }
