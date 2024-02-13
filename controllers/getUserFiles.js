@@ -70,8 +70,6 @@ async function compareImages(image, imagePaths, user) {
     return "Face not found in the reference image.";
   }
 
-  const referenceDescriptors = referenceDetections[0].descriptor;
-
   // threshold for similarity
   const similarityThreshold = 0.6;
 
@@ -95,34 +93,41 @@ async function compareImages(image, imagePaths, user) {
       continue;
     }
 
-    const currentDescriptors = currentDetections[0].descriptor;
+    for (const selfieFaceDetection of referenceDetections) {
+      for (const arrayFaceDetection of currentDetections) {
+        const distance = faceapi.euclideanDistance(
+          selfieFaceDetection.descriptor,
+          arrayFaceDetection.descriptor
+        );
 
-    // Compute similarity between the faces
-    const euclideanDistance = faceapi.euclideanDistance(
-      referenceDescriptors,
-      currentDescriptors
-    );
+        const similarityThreshold = 0.6;
 
-    console.log("euclideanDistance", euclideanDistance);
-    // Compare the similarity with the threshold
-    if (euclideanDistance < similarityThreshold) {
-      console.log(`${imageUrl}: Faces are similar.`);
-      matchingImages.push({
-        url: imageUrl,
-        name: imagePath?.name,
-        mimeType: imagePath?.mimeType,
-      });
-    } else {
-      console.log(`${imageUrl}: Faces are not similar.`);
+        // Compare the similarity with the threshold
+        if (distance < similarityThreshold) {
+          matchingImages.push({
+            url: imageUrl,
+            name: imagePath?.name,
+            mimeType: imagePath?.mimeType,
+          });
+          break;
+        }
+      }
     }
   }
 
-  const attachments = matchingImages.map((data) => ({
-    filename: data.name, // Extract the filename from the URL
-    path: data.url,
-    encoding: "base64", // Required for URL attachments
-    contentType: data.mimeType,
-  }));
+  const attachments = matchingImages.map((data) => {
+    return {
+      filename: data.name, // Extract the filename from the URL
+      path: data.url,
+      encoding: "base64", // Required for URL attachments
+      contentType: data.mimeType,
+    };
+  });
 
-  sendMail(user?.email, "Your Images", "Filtered Images", attachments);
+  sendMail(
+    user?.email,
+    attachments.length ? "Your Images" : "Images not found",
+    "Filtered Images",
+    attachments
+  );
 }
