@@ -4,6 +4,7 @@ import morgan from "morgan";
 import uploadFile from "./controllers/uploadFile.js";
 import getFiles from "./controllers/getFiles.js";
 import getUserFiles from "./controllers/getUserFiles.js";
+import composeFiles from "./controllers/composeFiles.js";
 import redirectToAuthURL from "./controllers/auth/redirectToAuthURL.js";
 import getTokenFromGoogle from "./controllers/auth/getTokenFromGoogle.js";
 import sequelize from "./config/sequalize.js";
@@ -36,6 +37,9 @@ app.get("/getFiles", verifyToken, getFiles);
 
 // get user images from google drive
 app.get("/getUserFiles", verifyToken, getUserFiles);
+
+// get image with filter
+app.get("/getImageWithFilter", verifyToken, composeFiles);
 
 try {
   await sequelize.sync();

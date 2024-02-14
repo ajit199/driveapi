@@ -70,9 +70,6 @@ async function compareImages(image, imagePaths, user) {
     return "Face not found in the reference image.";
   }
 
-  // threshold for similarity
-  const similarityThreshold = 0.6;
-
   // Array to store matching images
   const matchingImages = [];
 

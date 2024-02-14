@@ -4,6 +4,7 @@ import stream from "stream";
 import { fileTypeFromBuffer } from "file-type";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import oAuth2Client from "../config/googleAuth.js";
+import sharp from "sharp";
 
 // Configure AWS SDK with your credentials
 const s3Client = new S3Client({
@@ -107,7 +108,8 @@ async function uploadData(drive, id, fileName, fileUrl) {
   try {
     //upload file to a folder
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
-    const fileContents = Buffer.from(response.data, "binary");
+    let fileContents = await sharp(response.data).png().toBuffer();
+    fileContents = Buffer.from(fileContents, "binary");
     const type = await fileTypeFromBuffer(fileContents);
 
     const { data } = await drive.files.create({
@@ -139,7 +141,6 @@ async function uploadData(drive, id, fileName, fileUrl) {
 
     if (fileUrl?.includes("amazonaws.com")) {
       const urlParts = fileUrl.split("/");
-      // const bucket = urlParts[2];
       const objectKey = urlParts.slice(3).join("/");
       const params = {
         Bucket: bucketName,
