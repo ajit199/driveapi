@@ -41,6 +41,9 @@ app.get("/getUserFiles", verifyToken, getUserFiles);
 // get image with filter
 app.get("/getImageWithFilter", verifyToken, composeFiles);
 
+app.post("/get-feedback", (req, res) => {
+  res.send("received.");
+});
 try {
   await sequelize.sync();
   await sequelize.authenticate();
