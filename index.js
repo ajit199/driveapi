@@ -9,6 +9,7 @@ import redirectToAuthURL from "./controllers/auth/redirectToAuthURL.js";
 import getTokenFromGoogle from "./controllers/auth/getTokenFromGoogle.js";
 import sequelize from "./config/sequalize.js";
 import verifyToken from "./utils/verifyToken.js";
+import getFeedback from "./controllers/gemini.js";
 import cors from "cors";
 dotenv.config();
 
@@ -41,9 +42,8 @@ app.get("/getUserFiles", verifyToken, getUserFiles);
 // get image with filter
 app.get("/getImageWithFilter", verifyToken, composeFiles);
 
-app.post("/get-feedback", (req, res) => {
-  res.send("received.");
-});
+app.post("/get-feedback", getFeedback);
+
 try {
   await sequelize.sync();
   await sequelize.authenticate();
