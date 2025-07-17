@@ -84,7 +84,7 @@ async function getComposedImage(imageUrl, filterUrl, fileName) {
     fs.unlinkSync(filePath);
 
     // Object URL is constructed using the bucket name and object key
-    const objectUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${objectKey}`;
+    const objectUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${filteredImagesPath}`;
     return objectUrl;
   } catch (error) {
     console.log("error", error);
