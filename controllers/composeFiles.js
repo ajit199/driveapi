@@ -66,14 +66,15 @@ async function getComposedImage(imageUrl, filterUrl, fileName) {
       region,
     });
 
-    const urlParts = imageUrl.split("/");
-    urlParts[urlParts.length - 1] = filePath;
-    const objectKey = urlParts.slice(3).join("/");
+    const filteredImagesPath = `/public/workspaces/cloiiqoq700022qcvi760jlzp/typebots/clol0ttiu000r2qml775gz1fs/filteredImages/${filePath}`;
+    // const urlParts = imageUrl.split("/");
+    // urlParts[urlParts.length - 1] = filePath;
+    // const objectKey = urlParts.slice(3).join("/");
 
     // Upload the file to S3
     const params = {
       Bucket: bucketName,
-      Key: objectKey,
+      Key: filteredImagesPath,
       Body: fs.createReadStream(filePath),
     };
 
