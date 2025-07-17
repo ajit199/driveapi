@@ -66,7 +66,7 @@ async function getComposedImage(imageUrl, filterUrl, fileName) {
       region,
     });
 
-    const filteredImagesPath = `/public/workspaces/cloiiqoq700022qcvi760jlzp/typebots/clol0ttiu000r2qml775gz1fs/filteredImages/${filePath}`;
+    const filteredImagesPath = `public/workspaces/cloiiqoq700022qcvi760jlzp/typebots/clol0ttiu000r2qml775gz1fs/filteredImages/${filePath}`;
     // const urlParts = imageUrl.split("/");
     // urlParts[urlParts.length - 1] = filePath;
     // const objectKey = urlParts.slice(3).join("/");
